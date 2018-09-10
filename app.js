@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/test.html', indexRouter);
+app.use('/landingPageCT.html', indexRouter);
 app.use('/users', usersRouter);
 app.use('/checkout', checkout);
 // catch 404 and forward to error handler
