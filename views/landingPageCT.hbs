@@ -1,0 +1,72 @@
+<head>
+  <meta charset="utf-8">
+  <script src="https://js.braintreegateway.com/web/dropin/1.13.0/js/dropin.min.js"></script>
+</head>
+<body>
+  <div id="checkout-message"></div>
+  <div id="dropin-container"></div>
+  <button id="submit-button">Request payment method</button>
+  <script>
+    var button = document.querySelector('#submit-button');
+$(document).ready(function(){
+	var client_token;
+	$.ajax({
+          type: 'GET',
+          url: '/checkout',
+
+        }).done(function(result) {
+		client_token = result;
+	braintree.dropin.create({
+      authorization: client_token,
+      container: '#dropin-container',
+		card: {
+			cardholderName: true
+		},
+		 paypal: {
+		flow: 'checkout',
+		buttonStyle: {
+		  color: 'blue',
+		  shape: 'rect',
+		  size: 'medium'
+		}
+	  }
+		
+    }, function (createErr, instance) {
+      button.addEventListener('click', function () {
+        instance.requestPaymentMethod(function (err, payload) {
+		//to get client token from server
+          $.ajax({
+          type: 'POST',
+          url: '/checkout/checkout',
+          data: {'paymentMethodNonce': payload.nonce}
+        }).done(function(result) {
+          // Tear down the Drop-in UI
+          instance.teardown(function (teardownErr) {
+            if (teardownErr) {
+              console.error('Could not tear down Drop-in UI!');
+            } else {
+              console.info('Drop-in UI has been torn down!');
+              // Remove the 'Submit payment' button
+              $('#submit-button').remove();
+            }
+          });
+
+          if (result.success) {
+			//get client token
+		//Displaying results from array - SSK
+			var replacedName = "Credit Card";
+			var resultArray = [result.transaction.id, result.transaction.amount , result.transaction.createdAt , result.transaction.paymentInstrumentType, result.transaction.currencyIsoCode]
+			var paymentInstrumentTypeConverted = JSON.stringify(result.transaction.paymentInstrumentType).replace(result.transaction.paymentInstrumentType, replacedName);
+            $('#checkout-message').html("<h1>Success</h1><p>Transaction ID:"+" "+result.transaction.id+"</p><p>Transaction amount:"+" "+result.transaction.amount+" "+result.transaction.currencyIsoCode+"</p><p>Created At:"+" "+result.transaction.createdAt+"</p><p>Payment Type:"+" "+paymentInstrumentTypeConverted+"</p>");
+          } else {
+            console.log(result);
+            $('#checkout-message').html('<h1>Error</h1><p>Check your console.</p>');
+          }
+        });
+        });
+      });
+    });
+	});
+});
+  </script>
+</body>
