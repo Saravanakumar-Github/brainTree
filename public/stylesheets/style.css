@@ -1,0 +1,25 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+button#submit-button {
+    background-color: #F9B546;
+    color: #0A396F;
+    font-weight: bold;
+    padding: 15px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.braintree-paypal.braintree-sheet{
+	display: block;
+}
+
+.braintree-form__flexible-fields label h3{
+	display: none;
+}
