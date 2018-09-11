@@ -9,20 +9,23 @@
   <script>
     var button = document.querySelector('#submit-button');
 $(document).ready(function(){
+// to get client token
 	var client_token;
 	$.ajax({
           type: 'GET',
           url: '/checkout',
 
         }).done(function(result) {
-		client_token = result;
+	client_token = result;
 	braintree.dropin.create({
-      authorization: client_token,
-      container: '#dropin-container',
+		authorization: client_token,
+		container: '#dropin-container',
+		//Adding cardholder field
 		card: {
 			cardholderName: true
 		},
-		 paypal: {
+		//Adding paypal option
+		paypal: {
 		flow: 'checkout',
 		buttonStyle: {
 		  color: 'blue',
@@ -30,7 +33,6 @@ $(document).ready(function(){
 		  size: 'medium'
 		}
 	  }
-		
     }, function (createErr, instance) {
       button.addEventListener('click', function () {
         instance.requestPaymentMethod(function (err, payload) {
@@ -52,8 +54,7 @@ $(document).ready(function(){
           });
 
           if (result.success) {
-			//get client token
-		//Displaying results from array - SSK
+		//Displaying results from array
 			var replacedName = "Credit Card";
 			var resultArray = [result.transaction.id, result.transaction.amount , result.transaction.createdAt , result.transaction.paymentInstrumentType, result.transaction.currencyIsoCode]
 			var paymentInstrumentTypeConverted = JSON.stringify(result.transaction.paymentInstrumentType).replace(result.transaction.paymentInstrumentType, replacedName);
